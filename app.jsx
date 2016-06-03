@@ -10,24 +10,56 @@ class HexEdit extends React.Component {
             offset: 0,
             length: 0x200,
             chunks: [],
-            selectedCellId: null
+            selectedCellId: null,
+            selectedCellPosition: 0
         };
         this.handleScroll = this.handleScroll.bind(this);
-        this.handleSelectedCell = this.handleSelectedCell.bind(this);
-        this.handleKeyDown = this.handleKeyDown.bind(this);
-
+        this.handleCellEdit = this.handleCellEdit.bind(this);
+        //this.handleKeyUp = this.handleKeyUp.bind(this);
+		this.setData = this.setData.bind(this);
 
     }
 
-    handleSelectedCell(id) {
+    handleCellEdit(id, pos) {
         this.setState({
-            selectedCellId: id
+            selectedCellId: id,
+            selectedCellPosition: pos
         });
-        console.log(id);
+        console.log(`id: ${id}, position: ${pos}`);
     }
 
-    handleKeyDown(e) {
-        console.log(e);
+    setData(cell, val) {
+    	if (cell === null) return false;
+    	var _data = this.state.data;
+    	var _chunks = this.state.chunks;
+    	
+    	//(h * 0xF) + w
+    	cell = cell.split(':');
+    	var row = parseInt(cell[0], 10);
+    	var col = parseInt(cell[1], 10);
+    	
+    	var pos = (row * 16) + (col);
+    	console.log('pos ' + pos);
+    	console.log('val ' + val);
+    	console.log(_data);
+    	
+		val &= 0xFF;
+		
+		
+		if (this.state.selectedCellPosition == 0) {
+			val <<= 4;
+		}
+		
+		
+		//set main data
+    	_data[pos] = val;
+    	
+    	//set chunk (which is displayed)
+    	_chunks[row][col] = val;
+    	
+    	
+    	
+    	this.setState({ data: _data });
     }
 
     render() {
@@ -41,13 +73,13 @@ class HexEdit extends React.Component {
         };
 
         var selectedCell = {
-            handleSelectedCell: this.handleSelectedCell,
+            handleCellEdit: this.handleCellEdit,
             selectedCellId: this.state.selectedCellId
         };
 
         return (
             <div onWheel={this.handleScroll}>
-                <HexView data={hexViewData} selectedCell={selectedCell} onKeyDown={this.handleKeyDown} />
+                <HexView data={hexViewData} selectedCell={selectedCell} handleCellEdit={this.setData} />
                 <input type="file" id="hexview-input" onChange={this.test.bind(this)} />
 
 
@@ -119,14 +151,38 @@ HexEdit.defaultProps = {
 
 //
 //
+// HEXVIEW
 //
-//HEXVIEW
+//
 class HexView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
 
         //console.log(this.props.data);
+        
+        document.addEventListener('keyup', function(e) {
+        	console.log('e.keyCode : ' + e.keyCode);
+        	
+        	//Set a variable with the key pressed, like A or 0;
+        	var keyPressed = null;
+        	
+        	if ((e.keyCode >= 65 && e.keyCode <= 70) || (e.keyCode >= 48 && e.keyCode <= 57) ) {
+        		keyPressed = String.fromCharCode(e.keyCode);
+        	}
+        	
+        	//convert it from base 16 to base 10
+        	var keyValue = parseInt(keyPressed, 16);
+
+			//parseInt will set NaN on non-hex
+        	if ( ! isNaN(keyValue)) {
+        		this.props.handleCellEdit(this.props.selectedCell.selectedCellId, keyValue);
+        	}
+        	
+           //parentHexEdit.setData(row, col, value);
+           //keyCodes 65 - 70 = A-F
+           
+        }.bind(this));
     }
 
     setEditState(id) {
@@ -136,7 +192,9 @@ class HexView extends React.Component {
     }
 
     render() {
-
+        
+        
+        
         var nodes = Array();
 
         var rows = Array();
@@ -218,35 +276,27 @@ class HexCell extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-
-        };
-
+        this.state = {};
         this.handleClick = this.handleClick.bind(this);
     }
 
+    handleClick() {
+        if (this.props.selectedCell.selectedCellId == this.props.dataKey)
+            this.props.selectedCell.handleCellEdit(null);
+        else
+            this.props.selectedCell.handleCellEdit(this.props.dataKey);
+    }
+    
     render() {
         var hVal = ("00" + parseInt(this.props.data, 10).toString(16)).substr(-2);
 
         var selected = this.props.selectedCell.selectedCellId == this.props.dataKey ? true : false;
 
         return (
-            /*<input type="text" className="hex-cell" value={hVal} />*/
             <span className={(selected ? 'edit ': '')  + 'hex-cell'} data-key={this.props.dataKey} onClick={this.handleClick}>{hVal}</span>
         );
     }
-    handleClick() {
-        //do click stuff
-        if (this.props.selectedCell.selectedCellId == this.props.dataKey)
-            this.props.selectedCell.handleSelectedCell(null);
-        else
-            this.props.selectedCell.handleSelectedCell(this.props.dataKey);
-    }
 
-    handleKeyDown() {
-        //key stuff
-
-    }
 }
 HexCell.propTypes = {};
 HexCell.defaultProps = {};

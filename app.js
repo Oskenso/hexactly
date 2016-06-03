@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -25,30 +25,59 @@ var HexEdit = function (_React$Component) {
             offset: 0,
             length: 0x200,
             chunks: [],
-            selectedCellId: null
+            selectedCellId: null,
+            selectedCellPosition: 0
         };
         _this.handleScroll = _this.handleScroll.bind(_this);
-        _this.handleSelectedCell = _this.handleSelectedCell.bind(_this);
-        _this.handleKeyDown = _this.handleKeyDown.bind(_this);
+        _this.handleCellEdit = _this.handleCellEdit.bind(_this);
+        //this.handleKeyUp = this.handleKeyUp.bind(this);
+        _this.setData = _this.setData.bind(_this);
 
         return _this;
     }
 
     _createClass(HexEdit, [{
-        key: "handleSelectedCell",
-        value: function handleSelectedCell(id) {
+        key: 'handleCellEdit',
+        value: function handleCellEdit(id, pos) {
             this.setState({
-                selectedCellId: id
+                selectedCellId: id,
+                selectedCellPosition: pos
             });
-            console.log(id);
+            console.log('id: ' + id + ', position: ' + pos);
         }
     }, {
-        key: "handleKeyDown",
-        value: function handleKeyDown(e) {
-            console.log(e);
+        key: 'setData',
+        value: function setData(cell, val) {
+            if (cell === null) return false;
+            var _data = this.state.data;
+            var _chunks = this.state.chunks;
+
+            //(h * 0xF) + w
+            cell = cell.split(':');
+            var row = parseInt(cell[0], 10);
+            var col = parseInt(cell[1], 10);
+
+            var pos = row * 16 + col;
+            console.log('pos ' + pos);
+            console.log('val ' + val);
+            console.log(_data);
+
+            val &= 0xFF;
+
+            if (this.state.selectedCellPosition == 0) {
+                val <<= 4;
+            }
+
+            //set main data
+            _data[pos] = val;
+
+            //set chunk (which is displayed)
+            _chunks[row][col] = val;
+
+            this.setState({ data: _data });
         }
     }, {
-        key: "render",
+        key: 'render',
         value: function render() {
 
             var hexData = this.state.chunks.slice(this.state.offset, this.state.offset + 16).join().split(',');
@@ -59,28 +88,28 @@ var HexEdit = function (_React$Component) {
             };
 
             var selectedCell = {
-                handleSelectedCell: this.handleSelectedCell,
+                handleCellEdit: this.handleCellEdit,
                 selectedCellId: this.state.selectedCellId
             };
 
             return React.createElement(
-                "div",
+                'div',
                 { onWheel: this.handleScroll },
-                React.createElement(HexView, { data: hexViewData, selectedCell: selectedCell, onKeyDown: this.handleKeyDown }),
-                React.createElement("input", { type: "file", id: "hexview-input", onChange: this.test.bind(this) })
+                React.createElement(HexView, { data: hexViewData, selectedCell: selectedCell, handleCellEdit: this.setData }),
+                React.createElement('input', { type: 'file', id: 'hexview-input', onChange: this.test.bind(this) })
             );
         }
     }, {
-        key: "componentDidMount",
+        key: 'componentDidMount',
         value: function componentDidMount() {}
     }, {
-        key: "componentDidUpdate",
+        key: 'componentDidUpdate',
         value: function componentDidUpdate() {
             //console.log(this.state.data);
 
         }
     }, {
-        key: "handleScroll",
+        key: 'handleScroll',
         value: function handleScroll(e) {
             //console.log(e.deltaY);
 
@@ -99,7 +128,7 @@ var HexEdit = function (_React$Component) {
             e.preventDefault();
         }
     }, {
-        key: "test",
+        key: 'test',
         value: function test() {
 
             var file = document.getElementById('hexview-input').files[0];
@@ -138,8 +167,9 @@ HexEdit.defaultProps = {};
 
 //
 //
+// HEXVIEW
 //
-//HEXVIEW
+//
 
 var HexView = function (_React$Component2) {
     _inherits(HexView, _React$Component2);
@@ -152,18 +182,40 @@ var HexView = function (_React$Component2) {
         _this2.state = {};
 
         //console.log(this.props.data);
+
+        document.addEventListener('keyup', function (e) {
+            console.log('e.keyCode : ' + e.keyCode);
+
+            //Set a variable with the key pressed, like A or 0;
+            var keyPressed = null;
+
+            if (e.keyCode >= 65 && e.keyCode <= 70 || e.keyCode >= 48 && e.keyCode <= 57) {
+                keyPressed = String.fromCharCode(e.keyCode);
+            }
+
+            //convert it from base 16 to base 10
+            var keyValue = parseInt(keyPressed, 16);
+
+            //parseInt will set NaN on non-hex
+            if (!isNaN(keyValue)) {
+                this.props.handleCellEdit(this.props.selectedCell.selectedCellId, keyValue);
+            }
+
+            //parentHexEdit.setData(row, col, value);
+            //keyCodes 65 - 70 = A-F
+        }.bind(_this2));
         return _this2;
     }
 
     _createClass(HexView, [{
-        key: "setEditState",
+        key: 'setEditState',
         value: function setEditState(id) {
             this.setState({
                 editId: id
             });
         }
     }, {
-        key: "render",
+        key: 'render',
         value: function render() {
 
             var nodes = Array();
@@ -195,15 +247,15 @@ var HexView = function (_React$Component2) {
             //console.log(nodes);
 
             return React.createElement(
-                "div",
-                { className: "hex-view" },
+                'div',
+                { className: 'hex-view' },
                 React.createElement(
-                    "div",
-                    { className: "hex-head" },
+                    'div',
+                    { className: 'hex-head' },
                     React.createElement(
-                        "div",
+                        'div',
                         null,
-                        "00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F"
+                        '00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F'
                     )
                 ),
                 rows
@@ -232,7 +284,7 @@ var HexRow = function (_React$Component3) {
     }
 
     _createClass(HexRow, [{
-        key: "render",
+        key: 'render',
         value: function render() {
             //var cols = {};
 
@@ -244,16 +296,16 @@ var HexRow = function (_React$Component3) {
             offset = ("0000" + offset.toString(16)).substr(-4) + ':';
 
             return React.createElement(
-                "div",
-                { className: "hex-row" },
+                'div',
+                { className: 'hex-row' },
                 React.createElement(
-                    "span",
-                    { className: "hex-col-start" },
+                    'span',
+                    { className: 'hex-col-start' },
                     offset
                 ),
                 React.createElement(
-                    "div",
-                    { className: "hex-data-row" },
+                    'div',
+                    { className: 'hex-data-row' },
                     cols
                 )
             );
@@ -275,38 +327,27 @@ var HexCell = function (_React$Component4) {
         var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(HexCell).call(this, props));
 
         _this4.state = {};
-
         _this4.handleClick = _this4.handleClick.bind(_this4);
         return _this4;
     }
 
     _createClass(HexCell, [{
-        key: "render",
+        key: 'handleClick',
+        value: function handleClick() {
+            if (this.props.selectedCell.selectedCellId == this.props.dataKey) this.props.selectedCell.handleCellEdit(null);else this.props.selectedCell.handleCellEdit(this.props.dataKey);
+        }
+    }, {
+        key: 'render',
         value: function render() {
-            var hVal = ("00" + parseInt(this.props.data).toString(16)).substr(-2);
+            var hVal = ("00" + parseInt(this.props.data, 10).toString(16)).substr(-2);
 
             var selected = this.props.selectedCell.selectedCellId == this.props.dataKey ? true : false;
 
-            return(
-                /*<input type="text" className="hex-cell" value={hVal} />*/
-                React.createElement(
-                    "span",
-                    { className: (selected ? 'edit ' : '') + 'hex-cell', "data-key": this.props.dataKey, onClick: this.handleClick },
-                    hVal
-                )
+            return React.createElement(
+                'span',
+                { className: (selected ? 'edit ' : '') + 'hex-cell', 'data-key': this.props.dataKey, onClick: this.handleClick },
+                hVal
             );
-        }
-    }, {
-        key: "handleClick",
-        value: function handleClick() {
-            //do click stuff
-            if (this.props.selectedCell.selectedCellId == this.props.dataKey) this.props.selectedCell.handleSelectedCell(null);else this.props.selectedCell.handleSelectedCell(this.props.dataKey);
-        }
-    }, {
-        key: "handleKeyDown",
-        value: function handleKeyDown() {
-            //key stuff
-
         }
     }]);
 

@@ -3,80 +3,7 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>Hexeditor</title>
-	<style>
-        body {
-            font-family: monospace;
-        }
-		.hex-view {
-			width: 30em;
-			overflow:hidden;
-			display: inline-block;
-			vertical-align: top;
-			-webkit-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-		}
-		.data-view {
-			display: inline-block;
-			vertical-align: top;
-		}
-		.hex-cell, .view-cell {
-			border: none;
-			box-shadow: none;
-			-webkit-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			
-			font-family: monospace;
-			padding: 0;
-			margin: 0;
-			text-transform: uppercase;
-
-			margin-right: 0.55em;
-			width: 1.06em;
-			background-color:transparent;
-		}
-		
-		.view-cell {
-			margin:0;
-			width: 0.8em;
-			text-align: center;
-			display: inline-block;
-		}
-
-		.hex-col-start {
-			vertical-align: middle;
-			margin-right:0.5em;
-
-		}
-
-		.hex-head {
-			margin-left:3.32em;
-			background-color: rgba(0,0,0,0.1);
-			display: inline-block;
-		}
-
-		.hex-row:nth-child(2n+1) {
-			background-color: rgba(0,0,0,0.1);
-
-			background: -webkit-linear-gradient(left, rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.1) 97%,rgb(255,255,255) 97%,rgb(255,255,255) 100%);
-
-		}
-
-		.hex-data-row {
-			display: inline-block;
-			vertical-align:middle;
-		}
-
-		.data-row {
-			height: 1.231em;
-		}
-
-		.hex-cell.edit {
-			background-color: yellow;
-		}
-
-	</style>
+	<link rel="stylesheet" href="styles.css" type="text/css" />
 
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/0.6.11/css/perfect-scrollbar.min.css" type="text/stylesheet">
 </head>
@@ -92,11 +19,14 @@
 
 
 <script>
+    /* global $ */
 	var testData = new Uint8Array(new ArrayBuffer(0x100));
 
 	for (var i = 0; i < testData.length; i++) {
 		testData[i] = Math.floor(Math.random() * 256);
 	}
+	
+
 
 </script>
 
