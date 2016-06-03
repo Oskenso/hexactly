@@ -2,15 +2,19 @@
 <html>
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-
+    <title>Hexeditor</title>
 	<style>
-
+        body {
+            font-family: monospace;
+        }
 		.hex-view {
 			width: 30em;
 			overflow:hidden;
 			display: inline-block;
 			vertical-align: top;
 			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
 		}
 		.data-view {
 			display: inline-block;
@@ -19,8 +23,10 @@
 		.hex-cell, .view-cell {
 			border: none;
 			box-shadow: none;
-			-webkit-appearance: none;
-			outline: none;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			
 			font-family: monospace;
 			padding: 0;
 			margin: 0;
@@ -30,6 +36,7 @@
 			width: 1.06em;
 			background-color:transparent;
 		}
+		
 		.view-cell {
 			margin:0;
 			width: 0.8em;
@@ -52,7 +59,7 @@
 		.hex-row:nth-child(2n+1) {
 			background-color: rgba(0,0,0,0.1);
 
-			background: -webkit-linear-gradient(left, rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.1) 97%,rgb(255,255,255) 97%,rgb(255,255,255) 100%)
+			background: -webkit-linear-gradient(left, rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.1) 97%,rgb(255,255,255) 97%,rgb(255,255,255) 100%);
 
 		}
 
@@ -73,121 +80,23 @@
 
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/0.6.11/css/perfect-scrollbar.min.css" type="text/stylesheet">
 </head>
-<body style="font-family: monospace;">
+<body>
 
-
-<div id="test-container" style="display:inline-block;vertical-align:top;"></div>
-<input type="file" id="f-input">
-
-<br>
-<h4>react render</h4>
 <div id="n-hexview"></div>
-
-
-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.js"></script>
-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-rc1/jquery.min.js"></script>
 
 
 
-<script src="jquery.autotab.min.js"></script>
-
-
-
 <script>
-    /*global $*/
 	var testData = new Uint8Array(new ArrayBuffer(0x100));
 
 	for (var i = 0; i < testData.length; i++) {
 		testData[i] = Math.floor(Math.random() * 256);
 	}
-
-	$('#test-container').append( BuildHexView(testData) );
-
-	function BuildHexView(data) {
-
-		var hexView = $('<div class="hex-view" />');
-
-		var rowContainer = $('<div />');
-		var row = $('');
-
-		rowContainer = $('<div class="hex-head"><div>00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F</div></div>');
-
-		var dataView = $('<div class="data-view" />');
-		var dataRow = $('<div> -- Data View -- </div>');
-		var dataRowContainer = $('');
-
-		for (i in data) {
-
-			if (i % 16 == 0) {
-				hexView.append(rowContainer);
-				rowContainer.append(row);
-				rowContainer = $('<div class="hex-row" />');
-
-				var hOffset = ("0000" + parseInt(i).toString(16)).substr(-4);
-
-				rowContainer.append('<span class="hex-col-start">'+hOffset+':</span>');
-				row = $('<div class="hex-data-row"  />');
-				//data view
-
-				dataView.append(dataRow);
-				dataRow = $('<div class="data-row" />');
-			}
-			var hVal = ("00" + parseInt(data[i]).toString(16)).substr(-2);
-
-			var col = $('<input type="text" class="hex-cell">').val(hVal);
-			//var col = $('<span class="hex-cell">').val(hVal);
-			row.append(col);
-
-			//data view
-			//col = $('<input type=text" class="hex-cell">').val(String.fromCharCode(data[i]));
-			col = $('<span class="view-cell" />').text( String.fromCharCode(data[i]) );
-			//col = $('<input type="text" class="view-cell">').val(String.fromCharCode(data[i]));
-			dataRow.append(col);
-
-
-		}
-		hexView.append(rowContainer);
-		rowContainer.append(row);
-
-		dataView.append(dataRow);
-		//dataView.append(dataRow);
-		//return hexView;
-		var returnDiv = $('<div />');
-		returnDiv.append(hexView);
-		returnDiv.append(dataView);
-		return returnDiv;
-
-	}
-
-	$(function(){
-		var opts = {
-			maxlength: 2,
-			format: "hexadecimal",
-
-		};
-		$('input.hex-cell').autotab(opts);
-		$('input.view-cell').autotab({maxlength:1});
-
-		$('#f-input').change(function () {
-			var file = document.getElementById('f-input').files[0];
-			//var file = $('#f-input')[0].files[0];
-			console.log(file);
-			var reader = new FileReader();
-
-			reader.onload = function(e) {
-				$('#test-container').html( BuildHexView(new Uint8Array(reader.result)) );
-				//ReactDOM.render(React.createElement(HexEdit, { data: reader.result }), document.getElementById('n-hexview'));
-
-			};
-			reader.readAsArrayBuffer(file);
-		});
-
-	});
 
 </script>
 
