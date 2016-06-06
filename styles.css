@@ -1,95 +1,188 @@
-        body {
-            font-family: monospace;
-        }
-		.hex-view {
-			width: 30em;
-			overflow:hidden;
-			display: inline-block;
-			vertical-align: top;
-			-webkit-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-		}
-		.data-view {
-			display: inline-block;
-			vertical-align: top;
-		}
-		.hex-cell, .view-cell {
-			border: none;
-			box-shadow: none;
-			-webkit-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			
-			font-family: monospace;
-			padding: 0;
-			margin: 0;
-			text-transform: uppercase;
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600);
 
-			margin-right: 0.55em;
-			width: 1.06em;
-			background-color:transparent;
-		}
-		
-		.view-cell {
-			margin:0;
-			width: 0.8em;
-			text-align: center;
-			display: inline-block;
-		}
+html {
+	font-size: 16px;
+	/*
+	font-size:0.875rem; 14
+	font-size:0.8125rem; 13
+	*/
+	background-color: #282c34;
+	color: #9da5b4;
+}
+body {
+	margin:1rem;
+    font-family: monospace;
+}
 
-		.hex-col-start {
-			vertical-align: middle;
-			margin-right:0.5em;
 
-		}
+#n-hex-view {
+	font-family: monospace;
+	height:100%;
+	width:100%;
+}
 
-		.hex-head {
-			margin-left:3.32em;
-			background-color: rgba(0,0,0,0.1);
-			display: inline-block;
-		}
+#open-file-container {
+	position:relative;
+	padding:0.6em;
+}
 
-		.hex-row:nth-child(2n+1) {
-			background-color: rgba(0,0,0,0.1);
+.btn-open-file {
+	font-size:0.875rem;
+	font-weight: 600;
+	background-color: rgba(255,255,255,0.8);
+	border:1px solid rgba(0,0,0,0.3);
+	display: inline-block;
+	padding:0.5em 1em;
+	color: hsla(219,13%,25%,1);
+	font-family: 'Open Sans', sans-serif;
+	
+}
 
-			background: -webkit-linear-gradient(left, rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.1) 97%,rgb(255,255,255) 97%,rgb(255,255,255) 100%);
+#open-file-filename {
+	margin-left:0.5em;
+}
+#hexview-input {
+	opacity:0;
+	position:absolute;
+	left:0;
+	top:0;
+	width: 100%;
+	height: 100%;
+}
 
-		}
+.card {
+	box-shadow: 1px 1px 3px 0 rgba(0,0,0,0.37);
+	background-color: rgba(255,255,255,0.05);
+	border-radius: 2px;
+	padding:1em;
+	margin:0.5em;
+}
 
-		.hex-data-row {
-			display: inline-block;
-			vertical-align:middle;
-		}
+.hex-view {
+	font-size:1rem;
+	min-width: 30rem;
+	overflow:hidden;
+	display: inline-block;
+	vertical-align: top;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+.data-view {
+	display: inline-block;
+	vertical-align: top;
+}
 
-		.data-row {
-			height: 1.231em;
-		}
+.hex-cell {
+	text-transform: uppercase;
+}
+.hex-cell, .data-cell {
+	flex: 1 1 0;
+	border: none;
+	box-shadow: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	
+	font-family: monospace;
+	padding: 0;
+	margin: 0;
 
-		.hex-cell.edit {
-			background-color: yellow;
-			position: relative;
-		}
-		
-		.hex-cell.edit:before {
-			top: -2px;
-			left: -4px;
-			position: absolute;
-			content: '|';
-			font-size: 14px;
-			color: #2E3D48;
-			animation: 1s blink step-end infinite;
-		}
-		
-		@keyframes blink {
-			from, to {
-				color: transparent;
-			}
-			50% {
-				color: black;
-			}
-		}
-		
-		.hex-cell {
-			cursor: pointer;
-		}
+	background-color:transparent;
+}
+
+.data-cell {
+	text-align: center;
+	display: inline-block;
+}
+
+.data-cell.edit {
+	background-color: #ffffff;
+	mix-blend-mode: difference;
+	position: relative;
+}
+
+.hex-col-start {
+	flex: 1 1 0;
+	margin-right: 0.5rem;
+
+	color: hsla(219,13%,75%,1);
+
+}
+
+.hex-head {
+	display: flex;
+	color: hsla(219,13%,75%,1);
+	margin-bottom:0.2rem;
+}
+
+
+.hex-head > div:first-child {
+	flex: 11 1 0;
+}
+.hex-head > div:last-child {
+	flex: 90 1 0;
+	word-spacing: 0.0223rem;
+}
+
+.hex-row {
+	display: flex;
+}
+
+.hex-row:nth-child(2n) .hex-data-row {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+.hex-row:nth-child(2n+1) .hex-data-row {
+	background-color: rgba(255,255,255,0.03);
+}
+
+.hex-data-row {
+	display:flex;
+	flex: 16 1 0;
+	
+}
+.data-head {
+	margin-bottom: 0.2rem;
+	padding:0 0.25rem;
+}
+.data-row {
+	height: 1.231rem;
+}
+
+.hex-cell.edit {
+	position: relative;
+}
+
+.hex-cell.edit:before {
+	position: absolute;
+	content: '';
+	
+	width: 0.55rem;
+    height: 1.16rem;
+    top: 0.03rem;
+    
+	display: inline-block;
+	background-color: rgb(255,255,255);
+	font-size: 14px;
+	color: #2E3D48;
+	animation: 1s blink step-start infinite;
+	mix-blend-mode: difference;
+}
+
+@keyframes blink {
+	from, to {
+		color: transparent;
+		background-color: rgb(0,0,0);
+	}
+	50% {
+		color: black;
+		background-color: rgb(255,255,255);
+	}
+}
+.hex-cell.edit.pos1:before {
+	left: 0.55rem;
+}
+
+.hex-cell {
+	cursor: pointer;
+}
