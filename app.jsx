@@ -1,5 +1,10 @@
 /* global $ global React global ReactDOM*/
 
+/*
+TODO: Save data file 
+
+*/
+
 //HexEdit
 class HexEdit extends React.Component {
     constructor(props) {
