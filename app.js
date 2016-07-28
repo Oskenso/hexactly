@@ -12,6 +12,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 /* global $ global React global ReactDOM*/
 
+/*
+
+TODO: Save data file 
+
+*/
+
 //HexEdit
 
 var HexEdit = function (_React$Component) {

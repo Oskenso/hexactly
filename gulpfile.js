@@ -1,14 +1,10 @@
 const gulp = require('gulp');
-//const tsc = require('gulp-typescript');
 const babel = require('gulp-babel');
 
 
-//var tsProject = tsc.createProject('tsconfig.json');
-
 
 gulp.task('default', ['jsx'], function() {
-	//var res = tsProject.src().pipe(tsc(tsProject));
-	//return res.js.pipe(gulp.dest(''));
+
 });
 
 gulp.task('jsx', () =>
@@ -24,5 +20,4 @@ gulp.task('jsx', () =>
         .pipe(gulp.dest(''))
 );
 
-//var watcher = gulp.watch('*.ts', ['default']);
 var watch = gulp.watch('*.jsx', ['jsx']);
