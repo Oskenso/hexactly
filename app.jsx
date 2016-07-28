@@ -23,6 +23,7 @@ class HexEdit extends React.Component {
 		
 
         this.state = {
+            currentFilename: '',
             chunkSize: 16,
             data: _data,
             chunks: _chunks,
@@ -216,8 +217,8 @@ class HexEdit extends React.Component {
             <div onWheel={this.handleScroll}>
                 <div id="open-file-container">
                     <div className="btn-open-file">Open File</div>
-                    <span id="open-file-filename"></span>
-                    <input type="file" id="hexview-input" onChange={this.test.bind(this)} />
+                    <span id="open-file-filename">{this.state.currentFilename}</span>
+                    <input type="file" id="hexview-input" onChange={this.ReadFile.bind(this)} />
                 </div>
                 <HexView data={hexViewData} selectedCell={selectedCell} handleCellEdit={this.handleCellEdit} handleSetData={this.setData} />
                 <DataView data={hexViewData} selectedCell={selectedCell} />
@@ -253,12 +254,13 @@ class HexEdit extends React.Component {
         }
         e.preventDefault();
     }
-    test() {
+    ReadFile() {
 
         var file = document.getElementById('hexview-input').files[0];
         //var file = $('#f-input')[0].files[0];
 
-        $('#open-file-filename').text(file.name);
+        //$('#open-file-filename').text(file.name);
+        this.setState({currentFilename: file.name});
         var reader = new FileReader();
         reader.onload = function(e) {
 
@@ -573,10 +575,13 @@ HexCell.propTypes = {};
 HexCell.defaultProps = {};
 
 
+function ready(fn) {
+    if (document.readyState != 'loading') fn();
+    else document.addEventListener('DOMContentLoaded', fn);
+}
 
-$(function(){
+ready(() => {
 
-	/* global $ */
 	var testData = new Uint8Array(new ArrayBuffer(0x285));
 
 	for (var i = 0; i < testData.length; i++) {

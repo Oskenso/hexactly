@@ -41,6 +41,7 @@ var HexEdit = function (_React$Component) {
         }
 
         _this.state = (_this$state = {
+            currentFilename: '',
             chunkSize: 16,
             data: _data,
             chunks: _chunks,
@@ -244,8 +245,12 @@ var HexEdit = function (_React$Component) {
                         { className: 'btn-open-file' },
                         'Open File'
                     ),
-                    React.createElement('span', { id: 'open-file-filename' }),
-                    React.createElement('input', { type: 'file', id: 'hexview-input', onChange: this.test.bind(this) })
+                    React.createElement(
+                        'span',
+                        { id: 'open-file-filename' },
+                        this.state.currentFilename
+                    ),
+                    React.createElement('input', { type: 'file', id: 'hexview-input', onChange: this.ReadFile.bind(this) })
                 ),
                 React.createElement(HexView, { data: hexViewData, selectedCell: selectedCell, handleCellEdit: this.handleCellEdit, handleSetData: this.setData }),
                 React.createElement(DataView, { data: hexViewData, selectedCell: selectedCell })
@@ -279,13 +284,14 @@ var HexEdit = function (_React$Component) {
             e.preventDefault();
         }
     }, {
-        key: 'test',
-        value: function test() {
+        key: 'ReadFile',
+        value: function ReadFile() {
 
             var file = document.getElementById('hexview-input').files[0];
             //var file = $('#f-input')[0].files[0];
 
-            $('#open-file-filename').text(file.name);
+            //$('#open-file-filename').text(file.name);
+            this.setState({ currentFilename: file.name });
             var reader = new FileReader();
             reader.onload = function (e) {
 
@@ -657,9 +663,12 @@ var HexCell = function (_React$Component7) {
 HexCell.propTypes = {};
 HexCell.defaultProps = {};
 
-$(function () {
+function ready(fn) {
+    if (document.readyState != 'loading') fn();else document.addEventListener('DOMContentLoaded', fn);
+}
 
-    /* global $ */
+ready(function () {
+
     var testData = new Uint8Array(new ArrayBuffer(0x285));
 
     for (var i = 0; i < testData.length; i++) {
